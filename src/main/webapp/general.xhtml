@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+
+</h:head>
+<h:body>
+
+    <h:form>
+        <p:growl id="messages" showDetail="true" />
+
+        <p:toolbar>
+            <f:facet name="left">
+                <p:commandButton type="submit" value="Refresh data" action="#{orders.refresh}" icon="ui-icon-document" />
+
+                <p:commandButton type="button" value="Open" icon="ui-icon-folder-open" />
+
+            <!--<span class="ui-separator">-->
+                <!--<span class="ui-icon ui-icon-grip-dotted-vertical" />-->
+            <!--</span>-->
+            </f:facet>
+
+            <f:facet name="right">
+                <p:menuButton value="Options">
+                    <p:menuitem value="Save" actionListener="#{toolbarView.save}" update="messages" icon="ui-icon-disk" />
+                    <p:menuitem value="Update" actionListener="#{toolbarView.update}" update="messages" icon="ui-icon-arrowrefresh-1-w" />
+                    <p:menuitem value="Delete" actionListener="#{toolbarView.delete}" ajax="false" icon="ui-icon-close" />
+                    <p:menuitem value="Homepage" url="http://www.primefaces.org" icon="ui-icon-extlink" />
+                </p:menuButton>
+            </f:facet>
+
+        </p:toolbar>
+    </h:form>
+
+
+
+    <h:form>
+<p:dataTable rowStatePreserved="false" value="#{orders.list}" var="TOrder" styleClass="fa-facebook-square" style="font-size:12px;margin-bottom:40px">
+    <f:facet name="header">
+        List of Orders
+    </f:facet>
+    <p:column headerText="Id" sortBy="#{TOrder.id}">
+       <h:outputText style="float: inherit" value="#{TOrder.id}"/>
+    </p:column>
+    <p:column headerText="Date" sortBy="#{TOrder.date}">
+        <h:outputText value="#{TOrder.date}">
+        <!--<p:calendar value="#{TOrder.date}" pattern="dd-MM-yyyy" disabled="true"/>-->
+        <f:convertDateTime pattern="dd-MM-yyyy"/>
+        </h:outputText>
+    </p:column>
+
+    <p:column headerText="Items" style="width: 400px">
+        <p:dataTable  value="#{TOrder.items}" var="item">
+            <p:column headerText="Name">
+                <h:outputText value="#{item.name}"/>
+            </p:column>
+            <p:column headerText="Quantity">
+                <h:outputText value="#{item.quantity}"/>
+            </p:column>
+            <p:column headerText="Price">
+                <h:outputText value="#{item.price}">
+                    <f:convertNumber type="currency" currencySymbol="$" />
+                </h:outputText>
+            </p:column>
+        </p:dataTable>
+    </p:column>
+
+    <p:column headerText="Sum" sortBy="#{TOrder.sum}" >
+        <h:outputText value="#{TOrder.sum}">
+            <f:convertNumber type="currency" currencySymbol="$" />
+        </h:outputText>
+    </p:column>
+</p:dataTable>
+    </h:form>
+</h:body>
+</html>
