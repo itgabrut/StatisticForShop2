@@ -2,6 +2,7 @@ package com.ilya.service;
 
 import com.ilya.model.TOrder;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -15,9 +16,9 @@ public interface OrderService {
 
     TOrder getOrder();
 
-    List<TOrder> getLazyList(int first, int pageSize, String sortField, String sortOrder, Map<String, Object> filters);
+    List<TOrder> getLazyList(int first, int pageSize, String sortField, String sortOrder, Map<String, Object> filters)throws IOException;
 
     List<TOrder> getBetweenDate(String w,String s);
 
-    int count(Map<String,Object> map);
+    int count(Map<String,Object> map)throws IOException;
 }

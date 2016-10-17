@@ -1,5 +1,6 @@
 package com.ilya.service.pdf;
 
+import com.ilya.interceptors.annotations.Audited;
 import com.ilya.model.TItem;
 import com.ilya.model.TOrder;
 import com.itextpdf.io.font.FontConstants;
@@ -19,7 +20,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -29,6 +29,7 @@ import java.util.List;
 @SessionScoped
 public class ForPDFService implements Serializable {
 
+    @Audited
     public ByteArrayOutputStream createPDF(List<TOrder> list) throws IOException{
 
         int sum = 0;

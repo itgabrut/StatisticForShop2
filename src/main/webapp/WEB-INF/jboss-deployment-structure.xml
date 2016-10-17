@@ -4,8 +4,9 @@
 
     <deployment>
 
-
-
+        <exclude-subsystems>
+            <subsystem name="logging" />
+        </exclude-subsystems>
        <exclusions>
            <module name="org.jboss.resteasy.resteasy-jaxb-provider"></module>
        </exclusions>

@@ -2,18 +2,21 @@ package com.ilya.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ilya.interceptors.annotations.Audited;
 import com.ilya.model.TOrder;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.plugins.providers.jackson.ResteasyJackson2Provider;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
@@ -38,13 +41,10 @@ public class GetOrdersService implements OrderService , Serializable{
 
     private Client client;
 
-//    @PostConstruct
-//    public void init(){
-//        ResteasyProviderFactory instance=ResteasyProviderFactory.getInstance();
-//        RegisterBuiltin.register(instance);
-//        instance.registerProvider(ResteasyJackson2Provider.class);
-//    }
+    @Inject
+    private LoginService loginService;
 
+    @Audited
     public List<TOrder> getBetweenDate(String from, String to){
         List<TOrder> list = new ArrayList<TOrder>();
         list = (List<TOrder>) client.target("http://localhost:8080/universe")
@@ -58,15 +58,10 @@ public class GetOrdersService implements OrderService , Serializable{
 
     public TOrder getOrder(){
         TOrder TOrder = null;
-        try{
-            TOrder = client.target("http://localhost:8080/universe")
-                    .path("ws/single")
-                    .request(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
-                    .get(TOrder.class);
-        }
-        catch (WebApplicationException ex) {
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
-        }
+        TOrder = client.target("http://localhost:8080/universe")
+                .path("ws/single")
+                .request(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
+                .get(TOrder.class);
         return TOrder;
     }
 
@@ -86,13 +81,15 @@ public class GetOrdersService implements OrderService , Serializable{
         return list;
     }
 
-    public int count(Map<String, Object> map) {
+    @Audited
+    public int count(Map<String, Object> map)throws IOException {
         return getLazyList(-1,-1,null,null,map).size();
     }
 
-    public List<TOrder> getLazyList(int first, int pageSize, String sortField, String sortOrder, Map<String, Object> filters){
+    @Audited
+    public List<TOrder> getLazyList(int first, int pageSize, String sortField, String sortOrder, Map<String, Object> filters)throws IOException{
         ObjectMapper mapper = new ObjectMapper();
-        List<TOrder> list = new ArrayList<TOrder>();
+        List<TOrder> list;
         client.register(ResteasyJackson2Provider.class);
             WebTarget target = client.target("http://localhost:8080/universe")
                     .path("ws/lazy")
@@ -103,16 +100,12 @@ public class GetOrdersService implements OrderService , Serializable{
             for(Map.Entry<String,Object> entr : filters.entrySet()){
                 target = target.queryParam(entr.getKey(),(String)entr.getValue());
             }
-        String  ss = (String) target.request(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
-                                .get(String.class);
-        try {
-            list = mapper.readValue(ss, new TypeReference<List<TOrder>>() {
-            });
-        }
-        catch (IOException e){
-            e.printStackTrace();
-        }
-        return list;
+        String  ss = (String) target.request(MediaType.APPLICATION_JSON)
+                .cookie(new Cookie("JSESSIONID",loginService.getJSESSIONID()))
+                .accept(MediaType.APPLICATION_JSON)
+                .get(String.class);
 
+        list = mapper.readValue(ss, new TypeReference<List<TOrder>>(){});
+        return list;
     }
 }

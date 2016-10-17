@@ -12,6 +12,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -111,10 +112,15 @@ public class OrdersLazyTable {
                         FacesContext.getCurrentInstance().getAttributes().remove("datefilter");
                         return (List<TOrder>)this.getWrappedData();
                     }
-                    List<TOrder> result = service.getLazyList(first, pageSize, sortField, sortOrder.toString(), filters);
-                    model.setRowCount(service.count(filters));
-                    this.setWrappedData(result);
-                    setMyList(result);
+                    try {
+                        List<TOrder> result = service.getLazyList(first, pageSize, sortField, sortOrder.toString(), filters);
+                        model.setRowCount(service.count(filters));
+                        this.setWrappedData(result);
+                        setMyList(result);
+                    }
+                    catch (IOException e){
+
+                    }
                     return (List<TOrder>)this.getWrappedData();
                 }
             };

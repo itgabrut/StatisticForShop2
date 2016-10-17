@@ -14,12 +14,12 @@ import java.util.List;
  */
 
 
-@ManagedBean( name = "orders",eager = true)
-@RequestScoped
+//@ManagedBean( name = "orders",eager = true)
+//@RequestScoped
 public class OrdersBean {
 
 
-    @Inject
+//    @Inject
     private OrderService service;
 
     private TOrder TOrder;
@@ -42,7 +42,7 @@ public class OrdersBean {
         return list;
     }
 
-    @PostConstruct
+//    @PostConstruct
     public void init(){
         TOrder = service.getOrder();
     }

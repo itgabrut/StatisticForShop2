@@ -51,8 +51,7 @@ public class CustomExHandler extends ExceptionHandlerWrapper{
                 nav.handleNavigation(fc, null, "/error");
                 fc.renderResponse();
                 // remove the comment below if you want to report the error in a jsf error message
-                //JsfUtil.addErrorMessage(t.getMessage());
-
+//                JsfUtil.addErrorMessage(t.getMessage());
             } finally {
                 //remove it from queue
                 i.remove();
