@@ -14,11 +14,9 @@ public interface OrderService {
 
     List<TOrder> getOrders();
 
-    TOrder getOrder();
-
-    List<TOrder> getLazyList(int first, int pageSize, String sortField, String sortOrder, Map<String, Object> filters)throws IOException;
+    List<TOrder> getLazyList(String username,int first, int pageSize, String sortField, String sortOrder, Map<String, Object> filters)throws IOException;
 
     List<TOrder> getBetweenDate(String w,String s);
 
-    int count(Map<String,Object> map)throws IOException;
+    int count(String username,Map<String,Object> map)throws IOException;
 }

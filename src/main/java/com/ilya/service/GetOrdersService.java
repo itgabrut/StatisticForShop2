@@ -3,12 +3,14 @@ package com.ilya.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ilya.interceptors.annotations.Audited;
+import com.ilya.managedBeans.ForLogin;
 import com.ilya.model.TOrder;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
 import org.jboss.resteasy.plugins.providers.jackson.ResteasyJackson2Provider;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.bean.ManagedProperty;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.ws.rs.WebApplicationException;
@@ -41,6 +43,7 @@ public class GetOrdersService implements OrderService , Serializable{
 
     private Client client;
 
+
     @Inject
     private LoginService loginService;
 
@@ -56,14 +59,6 @@ public class GetOrdersService implements OrderService , Serializable{
         return list;
     }
 
-    public TOrder getOrder(){
-        TOrder TOrder = null;
-        TOrder = client.target("http://localhost:8080/universe")
-                .path("ws/single")
-                .request(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
-                .get(TOrder.class);
-        return TOrder;
-    }
 
     public List<TOrder> getOrders(){
         List<TOrder> list = new ArrayList<TOrder>();
@@ -82,17 +77,18 @@ public class GetOrdersService implements OrderService , Serializable{
     }
 
     @Audited
-    public int count(Map<String, Object> map)throws IOException {
-        return getLazyList(-1,-1,null,null,map).size();
+    public int count(String username,Map<String, Object> map)throws IOException {
+        return getLazyList(username,-1,-1,null,null,map).size();
     }
 
     @Audited
-    public List<TOrder> getLazyList(int first, int pageSize, String sortField, String sortOrder, Map<String, Object> filters)throws IOException{
+    public List<TOrder> getLazyList(String username,int first, int pageSize, String sortField, String sortOrder, Map<String, Object> filters)throws IOException{
         ObjectMapper mapper = new ObjectMapper();
         List<TOrder> list;
         client.register(ResteasyJackson2Provider.class);
             WebTarget target = client.target("http://localhost:8080/universe")
                     .path("ws/lazy")
+                    .queryParam("username",username)
                     .queryParam("first",first)
                     .queryParam("pageSize",pageSize)
                     .queryParam("sortField",sortField)
@@ -106,6 +102,7 @@ public class GetOrdersService implements OrderService , Serializable{
                 .get(String.class);
 
         list = mapper.readValue(ss, new TypeReference<List<TOrder>>(){});
+        if(list == null || list.size()==0)throw new RuntimeException("Access denied");
         return list;
     }
 }

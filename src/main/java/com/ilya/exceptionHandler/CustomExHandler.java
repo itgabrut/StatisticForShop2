@@ -1,6 +1,7 @@
 package com.ilya.exceptionHandler;
 
 import javax.faces.FacesException;
+import javax.faces.application.FacesMessage;
 import javax.faces.application.NavigationHandler;
 import javax.faces.context.ExceptionHandler;
 import javax.faces.context.ExceptionHandlerWrapper;
@@ -52,6 +53,7 @@ public class CustomExHandler extends ExceptionHandlerWrapper{
                 fc.renderResponse();
                 // remove the comment below if you want to report the error in a jsf error message
 //                JsfUtil.addErrorMessage(t.getMessage());
+                FacesContext.getCurrentInstance().addMessage(t.getMessage(), new FacesMessage());
             } finally {
                 //remove it from queue
                 i.remove();

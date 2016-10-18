@@ -9,6 +9,7 @@ import org.primefaces.model.SortOrder;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -30,6 +31,9 @@ public class OrdersLazyTable {
     @Inject
     private OrderService service;
 
+    @ManagedProperty(value = "#{loginBean}")
+    private ForLogin forLogin;
+
     private LazyDataModel<TOrder> model;
 
     private List<TOrder> myList;
@@ -39,6 +43,14 @@ public class OrdersLazyTable {
     private Date filterTripDateTo;
 
     private int sum;
+
+    public ForLogin getForLogin() {
+        return forLogin;
+    }
+
+    public void setForLogin(ForLogin forLogin) {
+        this.forLogin = forLogin;
+    }
 
     public int getSum() {
         return sum;
@@ -113,8 +125,8 @@ public class OrdersLazyTable {
                         return (List<TOrder>)this.getWrappedData();
                     }
                     try {
-                        List<TOrder> result = service.getLazyList(first, pageSize, sortField, sortOrder.toString(), filters);
-                        model.setRowCount(service.count(filters));
+                        List<TOrder> result = service.getLazyList(forLogin.getLogin().getUserName(),first, pageSize, sortField, sortOrder.toString(), filters);
+                        model.setRowCount(service.count(forLogin.getLogin().getUserName(),filters));
                         this.setWrappedData(result);
                         setMyList(result);
                     }
